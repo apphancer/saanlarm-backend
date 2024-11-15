@@ -6,7 +6,7 @@ from control_state import control_state
 USER_SETTINGS_FILE = 'user_settings.json'
 
 # Default states
-led_state = {"state": "off"}
+state = {"state": "off"}
 rgbw_values = {"red": 0, "green": 0, "blue": 0, "white": 0}
 alarm_time = None
 
@@ -15,7 +15,7 @@ def save_user_settings():
     Save current states (LED state, RGBW values, and alarm time) to the user settings file.
     """
     data = {
-        "led_state": led_state,
+        "state": state,
         "rgbw_values": rgbw_values,
         "alarm_time": alarm_time
     }
@@ -26,27 +26,27 @@ def load_user_settings():
     """
     Load user settings from the file. If file does not exist, create a default one.
     """
-    global led_state, rgbw_values, alarm_time
+    global state, rgbw_values, alarm_time
     if not os.path.exists(USER_SETTINGS_FILE):
         save_user_settings()  # Create the file with default values
     else:
         with open(USER_SETTINGS_FILE, 'r') as file:
             data = json.load(file)
-            led_state = data.get("led_state", led_state)
+            state = data.get("state", state)
             rgbw_values = data.get("rgbw_values", rgbw_values)
             alarm_time = data.get("alarm_time", alarm_time)
 
-def get_led_state():
+def get_state():
     """
     Retrieve the current LED state.
     """
-    return led_state
+    return state
 
-def set_led_state(data):
+def set_state(data):
     """
     Set the LED state (off, reading, cozy, alarm).
     """
-    global led_state
+    global state
     if 'state' not in data:
         return jsonify({"error": "State is required"}), 400
 
@@ -56,7 +56,7 @@ def set_led_state(data):
     if state not in valid_states:
         return jsonify({"error": "Invalid state"}), 400
 
-    led_state['state'] = state
+    state['state'] = state
     save_user_settings()  # Persist the state change
     control_state(state)
 

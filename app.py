@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify
 from control_state import control_state
 from alarm_checker import check_alarm
 from user_settings import (
-    load_user_settings, save_user_settings, get_led_state,
-    set_led_state, get_alarm_time, set_alarm_time, rgbw_values
+    load_user_settings, save_user_settings, get_state,
+    set_state, get_alarm_time, set_alarm_time, rgbw_values
 )
 from threading import Thread
 from led import set_led_colours
@@ -22,18 +22,18 @@ def periodic_alarm_check():
     running = True
 
     while running:
-        if get_led_state()['state'] == "alarm" and alarm_time:
-            check_alarm(get_led_state()['state'], alarm_time)
+        if get_state()['state'] == "alarm" and alarm_time:
+            check_alarm(get_state()['state'], alarm_time)
         time.sleep(60)
 
-@app.route('/led-state', methods=['GET'])
-def get_led_state_endpoint():
-    return jsonify(get_led_state())
+@app.route('/state', methods=['GET'])
+def get_state_endpoint():
+    return jsonify(get_state())
 
-@app.route('/led-state', methods=['POST'])
-def set_led_state_endpoint():
+@app.route('/state', methods=['POST'])
+def set_state_endpoint():
     data = request.get_json()
-    return set_led_state(data)
+    return set_state(data)
 
 @app.route('/alarm-time', methods=['GET'])
 def get_alarm_endpoint():
