@@ -56,7 +56,7 @@ def set_state(data):
     if state not in valid_states:
         return jsonify({"error": "Invalid state"}), 400
 
-    state['state'] = state
+    state['state'] = data['state']
     save_user_settings()  # Persist the state change
     control_state(state)
 
