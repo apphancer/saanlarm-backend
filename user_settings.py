@@ -50,17 +50,22 @@ def set_state(data):
     if 'state' not in data:
         return jsonify({"error": "State is required"}), 400
 
-    state = data['state']
+    state_value = data['state']
     valid_states = ["off", "reading", "cozy", "alarm"]
 
-    if state not in valid_states:
+    if state_value not in valid_states:
         return jsonify({"error": "Invalid state"}), 400
 
-    state['state'] = data['state']
+    # Ensure state is a dictionary
+    if isinstance(state, str):  # If state is a string, reset to a valid dictionary
+        state = {"state": state_value}
+    else:
+        state['state'] = state_value  # Update the 'state' in the dictionary
+
     save_user_settings()  # Persist the state change
     control_state(state)
 
-    return jsonify({"message": f"LED state updated to {state}"}), 200
+    return jsonify({"message": f"LED state updated to {state_value}"}), 200
 
 def get_alarm_time():
     """
