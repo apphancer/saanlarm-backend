@@ -1,6 +1,7 @@
 import os
 import json
 from flask import Flask, request, jsonify
+import led
 
 app = Flask(__name__)
 
@@ -59,6 +60,32 @@ def set_alarm():
     alarm_time = data["alarm_time"]
     set_alarm_time(alarm_time)
     return jsonify({"message": f"Alarm time set to {alarm_time}"}), 200
+
+
+@app.route('/set-colours', methods=['POST'])
+def set_colours():
+    """
+    Endpoint to set the LED colour using RGBW values
+    """
+    data = request.get_json()
+
+    required_keys = ['red', 'green', 'blue', 'white']
+    if not all(key in data for key in required_keys):
+        return jsonify({"error": "Missing RGBW values"}), 400
+
+    red_value = data['red']
+    green_value = data['green']
+    blue_value = data['blue']
+    white_value = data['white']
+
+    if not all(0 <= value <= 255 for value in [red_value, green_value, blue_value, white_value]):
+        return jsonify({"error": "RGBW values must be between 0 and 255"}), 400
+
+    led.set_led_colours(red_value, green_value, blue_value, white_value)
+
+    return jsonify({"message": f"LED colours set to R: {red_value}, G: {green_value}, B: {blue_value}, W: {white_value}"}), 200
+
+
 
 def control_led(state):
     """

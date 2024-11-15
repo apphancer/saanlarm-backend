@@ -14,7 +14,7 @@ This is the backend part of the Saanlarm project, which runs on the Raspberry Pi
 
 - Raspberry Pi
 - KY040 rotary encoder
-- LED Strip
+- LED Strip (I use a SK6812)
 
 ## Setup
 
@@ -26,9 +26,9 @@ This is the backend part of the Saanlarm project, which runs on the Raspberry Pi
 
 ### 2. Install dependencies
 
-Install the dependencies:
+Install the dependencies with sudo because accessing the GPIO pins on a Raspberry Pi directly through memory-mapped I/O typically requires root privileges. 
 
-`pip install -r requirements.txt`
+`sudo pip3 install -r requirements.txt`
 
 
 
