@@ -1,3 +1,5 @@
+import os
+import json
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -76,7 +78,10 @@ def control_led(state):
 
 def get_alarm_time():
     if not os.path.exists(ALARM_CONFIG_FILE):
-        return None  # No alarm time set yet
+        with open(ALARM_CONFIG_FILE, 'w') as file:
+            json.dump({"alarm_time": None}, file)
+        return None
+
     with open(ALARM_CONFIG_FILE, 'r') as file:
         data = json.load(file)
     return data.get("alarm_time")
@@ -84,6 +89,5 @@ def get_alarm_time():
 def set_alarm_time(alarm_time):
     with open(ALARM_CONFIG_FILE, 'w') as file:
         json.dump({"alarm_time": alarm_time}, file)
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
