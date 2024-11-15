@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+ALARM_CONFIG_FILE = 'alarm_config.json'
+
 # Default LED state
 led_state = {"state": "off"}
 
@@ -36,6 +38,26 @@ def set_led_state():
 
     return jsonify({"message": f"LED state updated to {state}"}), 200
 
+@app.route('/alarm-time', methods=['GET'])
+def get_alarm():
+    """Get the current alarm time."""
+    alarm_time = get_alarm_time()
+    if alarm_time:
+        return jsonify({"alarm_time": alarm_time}), 200
+    else:
+        return jsonify({"message": "No alarm time set"}), 404
+
+@app.route('/alarm-time', methods=['POST'])
+def set_alarm():
+    """Set the alarm time."""
+    data = request.get_json()
+    if "alarm_time" not in data:
+        return jsonify({"error": "Missing 'alarm_time' parameter"}), 400
+
+    alarm_time = data["alarm_time"]
+    set_alarm_time(alarm_time)
+    return jsonify({"message": f"Alarm time set to {alarm_time}"}), 200
+
 def control_led(state):
     """
     Function to control the LED based on the state
@@ -51,6 +73,17 @@ def control_led(state):
         print("Setting up alarm activation")
     else:
         print("Unknown state")
+
+def get_alarm_time():
+    if not os.path.exists(ALARM_CONFIG_FILE):
+        return None  # No alarm time set yet
+    with open(ALARM_CONFIG_FILE, 'r') as file:
+        data = json.load(file)
+    return data.get("alarm_time")
+
+def set_alarm_time(alarm_time):
+    with open(ALARM_CONFIG_FILE, 'w') as file:
+        json.dump({"alarm_time": alarm_time}, file)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

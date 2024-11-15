@@ -4,22 +4,31 @@ This is the backend part of the Saanlarm project, which runs on the Raspberry Pi
 
 ## Prerequisites
 
+### Software
+
 - Python 3.x installed on your Raspberry Pi
+- git installed on your Raspberry Pi
 - pip for installing dependencies
+
+### Hardware 
+
+- Raspberry Pi
+- KY040 rotary encoder
+- LED Strip
 
 ## Setup
 
 ### 1. Clone the repository (or create a directory for the project)
 
-git clone <repo-url>
-cd saanlarm-backend
+`git clone <repo-url>`
+`cd saanlarm-backend`
 
 
 ### 2. Install dependencies
 
 Install the dependencies:
 
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 
 
@@ -68,13 +77,3 @@ Example response:
 ```json
 { "message": "LED state updated to reading" }
 ```
-
-
-## Control Logic
-
-The control_led(state) function is a placeholder for controlling the actual LED hardware. You can replace it with code that interacts with the GPIO pins on the Raspberry Pi to turn the LED on/off or adjust brightness.
-
-Troubleshooting
-
-	•	Port already in use: Ensure no other services are running on port 5000.
-	•	Dependencies not found: Run pip install -r requirements.txt to install any missing packages.
