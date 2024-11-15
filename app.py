@@ -3,6 +3,8 @@ import json
 from flask import Flask, request, jsonify
 import led
 from alarm_checker import check_alarm  # Import the function
+from threading import Thread
+import time
 
 app = Flask(__name__)
 
@@ -12,6 +14,7 @@ USER_SETTINGS_FILE = 'user_settings.json'
 led_state = {"state": "off"}
 rgbw_values = {"red": 0, "green": 0, "blue": 0, "white": 0}
 alarm_time = None
+running = True  # Flag to control the background thread
 
 def save_user_settings():
     """
@@ -39,7 +42,6 @@ def load_user_settings():
             rgbw_values = data.get("rgbw_values", rgbw_values)
             alarm_time = data.get("alarm_time", alarm_time)
 
-
 def control_led(state):
     if state == "off":
         print("Turning off LED")
@@ -52,6 +54,15 @@ def control_led(state):
     else:
         print("Unknown state")
 
+def periodic_alarm_check():
+    """
+    Periodically checks the alarm condition.
+    """
+    global running
+    while running:
+        if led_state['state'] == "alarm" and alarm_time:
+            check_alarm(led_state['state'], alarm_time)
+        time.sleep(60)  # Check every minute (adjust as needed)
 
 @app.route('/led-state', methods=['GET'])
 def get_led_state():
@@ -81,9 +92,6 @@ def set_led_state():
     save_user_settings()  # Persist the state change
     control_led(state)
 
-    # Call the alarm checker if the state is relevant
-    check_alarm(led_state['state'], alarm_time)
-
     return jsonify({"message": f"LED state updated to {state}"}), 200
 
 @app.route('/alarm-time', methods=['GET'])
@@ -109,9 +117,6 @@ def set_alarm():
 
     alarm_time = data["alarm_time"]
     save_user_settings()  # Persist alarm time
-
-    # Check the alarm after setting the time (in case state is "alarm")
-    check_alarm(led_state['state'], alarm_time)
 
     return jsonify({"message": f"Alarm time set to {alarm_time}"}), 200
 
@@ -151,4 +156,8 @@ def get_colours():
 
 if __name__ == '__main__':
     load_user_settings()
+    # Start the background thread for periodic checks
+    alarm_thread = Thread(target=periodic_alarm_check)
+    alarm_thread.daemon = True  # Allows thread to exit when main program exits
+    alarm_thread.start()
     app.run(host='0.0.0.0', port=5000)
