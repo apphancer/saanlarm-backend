@@ -6,20 +6,23 @@ from user_settings import (
     set_led_state, get_alarm_time, set_alarm_time, rgbw_values
 )
 from threading import Thread
+from led import set_led_colours
 import config
 
 app = Flask(__name__)
 
-# Load user settings at startup
 load_user_settings()
 
-# Periodic check to manage alarms
 def periodic_alarm_check():
+    """
+    Periodically checks the alarm condition.
+    """
     global running
     while running:
         if led_state['state'] == "alarm" and alarm_time:
             check_alarm(led_state['state'], alarm_time)
-        time.sleep(60)  # Check every minute
+        time.sleep(60)
+
 
 @app.route('/led-state', methods=['GET'])
 def get_led_state_endpoint():
