@@ -39,6 +39,20 @@ def load_user_settings():
             rgbw_values = data.get("rgbw_values", rgbw_values)
             alarm_time = data.get("alarm_time", alarm_time)
 
+
+def control_led(state):
+    if state == "off":
+        print("Turning off LED")
+    elif state == "reading":
+        print("Setting LED to 100% brightness")
+    elif state == "cozy":
+        print("Setting LED to 50% brightness")
+    elif state == "alarm":
+        print("Setting up alarm activation")
+    else:
+        print("Unknown state")
+
+
 @app.route('/led-state', methods=['GET'])
 def get_led_state():
     """
