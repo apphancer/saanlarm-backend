@@ -3,11 +3,10 @@ from control_state import control_state, set_led_colours
 from alarm_checker import check_alarm
 from user_settings import load_user_settings, save_user_settings, get_led_state, set_led_state, get_alarm_time, set_alarm_time
 from threading import Thread
-import config  # Import the config module
+import config
 
 app = Flask(__name__)
 
-# Load user settings at startup
 load_user_settings()
 
 def periodic_alarm_check():
@@ -41,8 +40,27 @@ def set_alarm_endpoint():
 @app.route('/colours', methods=['POST'])
 def set_colours():
     data = request.get_json()
-    # your set_colour logic
-    return jsonify({"message": "Colours updated"}), 200
+
+    # Ensure that RGBW values are valid
+    red_value = data.get('red')
+    green_value = data.get('green')
+    blue_value = data.get('blue')
+    white_value = data.get('white')
+
+    if not all(0 <= value <= 255 for value in [red_value, green_value, blue_value, white_value]):
+        return jsonify({"error": "RGBW values must be between 0 and 255"}), 400
+
+    # Call the set_led_colours function to update the LED
+    set_led_colours(red_value, green_value, blue_value, white_value)
+
+    return jsonify({"message": f"LED colours set to R: {red_value}, G: {green_value}, B: {blue_value}, W: {white_value}"}), 200
+
+@app.route('/colours', methods=['GET'])
+def get_colours():
+    """
+    Endpoint to get the current RGBW values.
+    """
+    return jsonify(rgbw_values), 200
 
 if __name__ == '__main__':
     # Start the background thread for periodic checks
