@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from control_state import control_state, set_led_colours
+from control_state import control_state
 from alarm_checker import check_alarm
 from user_settings import (
     load_user_settings, save_user_settings, get_led_state,
