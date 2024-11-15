@@ -21,8 +21,8 @@ def periodic_alarm_check():
     running = True
 
     while running:
-        if led_state['state'] == "alarm" and alarm_time:
-            check_alarm(led_state['state'], alarm_time)
+        if get_led_state()['state'] == "alarm" and alarm_time:
+            check_alarm(get_led_state()['state'], alarm_time)
         time.sleep(60)
 
 @app.route('/led-state', methods=['GET'])
