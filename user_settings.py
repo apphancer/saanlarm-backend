@@ -1,0 +1,84 @@
+import os
+import json
+
+USER_SETTINGS_FILE = 'user_settings.json'
+
+# Default states
+led_state = {"state": "off"}
+rgbw_values = {"red": 0, "green": 0, "blue": 0, "white": 0}
+alarm_time = None
+
+def save_user_settings():
+    """
+    Save current states (LED state, RGBW values, and alarm time) to the user settings file.
+    """
+    data = {
+        "led_state": led_state,
+        "rgbw_values": rgbw_values,
+        "alarm_time": alarm_time
+    }
+    with open(USER_SETTINGS_FILE, 'w') as file:
+        json.dump(data, file)
+
+def load_user_settings():
+    """
+    Load user settings from the file. If file does not exist, create a default one.
+    """
+    global led_state, rgbw_values, alarm_time
+    if not os.path.exists(USER_SETTINGS_FILE):
+        save_user_settings()  # Create the file with default values
+    else:
+        with open(USER_SETTINGS_FILE, 'r') as file:
+            data = json.load(file)
+            led_state = data.get("led_state", led_state)
+            rgbw_values = data.get("rgbw_values", rgbw_values)
+            alarm_time = data.get("alarm_time", alarm_time)
+
+def get_led_state():
+    """
+    Retrieve the current LED state.
+    """
+    return led_state
+
+def set_led_state(data):
+    """
+    Set the LED state (off, reading, cozy, alarm).
+    """
+    global led_state
+    if 'state' not in data:
+        return jsonify({"error": "State is required"}), 400
+
+    state = data['state']
+    valid_states = ["off", "reading", "cozy", "alarm"]
+
+    if state not in valid_states:
+        return jsonify({"error": "Invalid state"}), 400
+
+    led_state['state'] = state
+    save_user_settings()  # Persist the state change
+    control_state(state)
+
+    return jsonify({"message": f"LED state updated to {state}"}), 200
+
+def get_alarm_time():
+    """
+    Get the current alarm time.
+    """
+    global alarm_time
+    if alarm_time:
+        return {"alarm_time": alarm_time}
+    else:
+        return {"message": "No alarm time set"}
+
+def set_alarm_time(data):
+    """
+    Set the alarm time.
+    """
+    global alarm_time
+    if "alarm_time" not in data:
+        return {"error": "Missing 'alarm_time' parameter"}, 400
+
+    alarm_time = data["alarm_time"]
+    save_user_settings()  # Persist alarm time
+
+    return {"message": f"Alarm time set to {alarm_time}"}, 200
