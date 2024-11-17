@@ -3,12 +3,14 @@ import threading
 from config import ROTARY_CLK, ROTARY_DT, ROTARY_SW
 
 def my_callback(scale_position):
+    if scale_position > 10:
+        scale_position = scale_position % 10
     print('Scale position is {}'.format(scale_position))
 
 my_encoder = pyky040.Encoder(CLK=ROTARY_CLK, DT=ROTARY_DT, SW=ROTARY_SW)
 
 def start_rotary():
-    my_encoder.setup(scale_min=0, scale_max=100, step=1, chg_callback=my_callback)
+    my_encoder.setup(scale_min=0, scale_max=10, step=1, chg_callback=my_callback)
     my_encoder.watch()
 
 def start_rotary_thread():

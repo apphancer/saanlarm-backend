@@ -13,7 +13,7 @@ This is the backend part of the Saanlarm project, which runs on the Raspberry Pi
 ### Hardware 
 
 - Raspberry Pi
-- KY040 rotary encoder
+- KY040 rotary encoder (https://pypi.org/project/pyky040/)
 - LED Strip (I use a SK6812)
 
 ## Setup
