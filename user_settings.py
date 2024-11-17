@@ -2,6 +2,7 @@ import os
 import json
 from flask import jsonify
 from control_state import control_state
+from led_control import led_on, led_off
 
 USER_SETTINGS_FILE = 'user_settings.json'
 
@@ -36,6 +37,15 @@ def load_user_settings():
             rgbw_values = data.get("rgbw_values", rgbw_values)
             alarm_time = data.get("alarm_time", alarm_time)
 
+def control_led(state):
+    """
+    Control the LED based on the current state.
+    """
+    if state.get('state') == "alarm":
+        led_on()
+    else:
+        led_off()
+
 def get_state():
     """
     Retrieve the current LED state.
@@ -63,7 +73,8 @@ def set_state(data):
         state['state'] = state_value  # Update the 'state' in the dictionary
 
     save_user_settings()  # Persist the state change
-    control_state(state)
+    control_state(state)  # Ensure other state-related actions are performed
+    control_led(state)  # Control the LED based on the new state
 
     return jsonify({"message": f"LED state updated to {state_value}"}), 200
 
