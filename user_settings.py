@@ -87,7 +87,6 @@ def set_alarm_time(data):
 
     return {"message": f"Alarm time set to {alarm_time}"}, 200
 
-
 def get_rgbw_values():
     global rgbw_values
     load_user_settings()

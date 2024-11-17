@@ -4,11 +4,21 @@ import gpiozero
 import threading
 import time
 from config import ROTARY_SW
+from user_settings import set_rgbw_values
 
 logging.basicConfig(level=logging.INFO)
 
 def change_callback(scale_position):
-    print('Scale position is {}'.format(scale_position))
+    # Define the brightness levels for each position from 0 to 19
+    brightness_levels = {i: int((255 / 19) * i) for i in range(20)}
+    brightness = brightness_levels.get(scale_position, 0)
+
+    # Update the brightness in the LED settings by calling set_rgbw_values
+    rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": brightness}
+    response, status_code = set_rgbw_values(rgbw_data)
+
+    logging.info(f'Scale position {scale_position}, brightness updated to {brightness}')
+    print(f'Scale position is {scale_position}, brightness {brightness}, response: {response}, status code: {status_code}')
 
 def sw_callback():
     print('Switch pressed!')
