@@ -2,7 +2,7 @@ import os
 import json
 from flask import jsonify
 from control_state import control_state
-from led_control import led_on, led_off
+from led_control import led_off, set_brightness
 
 USER_SETTINGS_FILE = 'user_settings.json'
 
@@ -42,7 +42,7 @@ def control_led(state):
     Control the LED based on the current state.
     """
     if state.get('state') == "alarm":
-        led_on()
+        set_brightness(50)
     else:
         led_off()
 

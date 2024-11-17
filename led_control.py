@@ -1,21 +1,17 @@
-# led_control.py
 import RPi.GPIO as GPIO
 from config import LED_GPIO, LED_GND
 import time
 
-# Set the GPIO mode
 GPIO.setmode(GPIO.BCM)
 
-# Set the LED pin as output
 GPIO.setup(LED_GPIO, GPIO.OUT)
-GPIO.setup(LED_GND, GPIO.OUT)  # Make sure the ground is connected to GND
+GPIO.setup(LED_GND, GPIO.OUT)
 
-# Set PWM control
-led_pwm = GPIO.PWM(LED_GPIO, 1000)  # 1kHz frequency for PWM
+led_pwm = GPIO.PWM(LED_GPIO, 1000)
 
 def led_on():
     """Turn the LED on at full brightness."""
-    led_pwm.start(100)  # Full brightness (100%)
+    led_pwm.start(100)
 
 def led_off():
     """Turn the LED off."""
@@ -31,14 +27,3 @@ def set_brightness(brightness):
 def cleanup():
     """Clean up GPIO setup."""
     GPIO.cleanup()
-
-if __name__ == "__main__":
-    try:
-        led_on()
-        time.sleep(5)  # LED on for 5 seconds
-        led_off()
-        time.sleep(2)  # Wait for 2 seconds
-        set_brightness(50)  # Set brightness to 50%
-        time.sleep(5)  # Wait for 5 seconds
-    finally:
-        cleanup()
