@@ -1,7 +1,4 @@
 def control_state(state):
-    """
-    Control the LED based on the state.
-    """
     if state == "off":
         print("Turning off LED")
     elif state == "reading":

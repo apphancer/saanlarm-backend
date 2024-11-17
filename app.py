@@ -15,9 +15,6 @@ app = Flask(__name__)
 load_user_settings()
 
 def periodic_alarm_check():
-    """
-    Periodically checks the alarm condition.
-    """
     global running
     running = True
 
@@ -46,16 +43,10 @@ def set_alarm_endpoint():
 
 @app.route('/colours', methods=['GET'])
 def get_colours():
-    """
-    Endpoint to get the current RGBW values.
-    """
     return jsonify(get_rgbw_values()), 200
 
 @app.route('/colours', methods=['POST'])
 def set_colours():
-    """
-    Endpoint to set the LED colours using RGBW values.
-    """
     data = request.get_json()
     response, status_code = set_rgbw_values(data)
     return jsonify(response), status_code
@@ -63,6 +54,6 @@ def set_colours():
 if __name__ == '__main__':
     start_rotary_thread()
     alarm_thread = Thread(target=periodic_alarm_check)
-    alarm_thread.daemon = True  # Allows thread to exit when main program exits
+    alarm_thread.daemon = True
     alarm_thread.start()
     app.run(host=config.HOST, port=config.PORT)

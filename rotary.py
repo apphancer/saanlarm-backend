@@ -1,4 +1,3 @@
-# rotary.py
 from pyky040 import pyky040
 import threading
 from config import ROTARY_CLK, ROTARY_DT, ROTARY_SW
