@@ -5,8 +5,8 @@ NUM_PIXELS = 150
 
 
 # GPIO pins for the rotary encoder
-ROTARY_CLK = 17
-ROTARY_DT = 18
+#ROTARY_CLK = 17
+#ROTARY_DT = 18
 ROTARY_SW = 26
 
 

@@ -31,6 +31,16 @@ Install the dependencies with sudo because accessing the GPIO pins on a Raspberr
 `sudo pip3 install -r requirements.txt`
 
 
+### 3. Rotary Encoder
+
+`sudo nano /boot/firmware/config.txt`
+
+Add the following line at the end of the file, replacing pin_a=17 and pin_b=18 with your actual GPIO pins:
+`dtoverlay=rotary-encoder,pin_a=17,pin_b=18,relative_axis=1,steps-per-period=1`
+
+`sudo reboot`
+
+
 
 ## Running the Backend
 
