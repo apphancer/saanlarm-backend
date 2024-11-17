@@ -6,86 +6,51 @@ from led import set_led_colours
 
 USER_SETTINGS_FILE = 'user_settings.json'
 
-state = {"state": "off"}
 rgbw_values = {"red": 0, "green": 0, "blue": 0, "white": 0}
 alarm_time = None
+alarm_state = "disabled"
 
 def save_user_settings():
     data = {
-        "state": state,
         "rgbw_values": rgbw_values,
-        "alarm_time": alarm_time
+        "alarm_time": alarm_time,
+        "alarm_state": alarm_state
     }
     with open(USER_SETTINGS_FILE, 'w') as file:
         json.dump(data, file)
 
 def load_user_settings():
-    global state, rgbw_values, alarm_time
+    global rgbw_values, alarm_time, alarm_state
     if not os.path.exists(USER_SETTINGS_FILE):
         save_user_settings()  # Create the file with default values
     else:
         with open(USER_SETTINGS_FILE, 'r') as file:
             data = json.load(file)
-            state = data.get("state", state)
             rgbw_values = data.get("rgbw_values", rgbw_values)
             alarm_time = data.get("alarm_time", alarm_time)
+            alarm_state = data.get("alarm_state", alarm_state)
 
-def control_led(state):
-    if state.get('state') == "alarm":
+def control_led(alarm_state):
+    if alarm_state == "enabled":
         set_brightness(5)
     else:
         led_off()
 
-def get_state():
-    return state
-
-def set_state(data):
-    global state
-    if 'state' not in data:
-        return jsonify({"error": "State is required"}), 400
-
-    state_value = data['state']
-    valid_states = ["off", "reading", "cozy", "alarm"]
-
-    if state_value not in valid_states:
-        return jsonify({"error": "Invalid state"}), 400
-
-    if state_value == "cozy":
-        rgbw_data = {"red": 128, "green": 0, "blue": 128, "white": 0}
-        set_rgbw_values(rgbw_data)
-    elif state_value == "reading":
-        rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 255}
-        set_rgbw_values(rgbw_data)
-    elif state_value == "off":
-        rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}
-        set_rgbw_values(rgbw_data)
-
-    if isinstance(state, str):
-        state = {"state": state_value}
-    else:
-        state['state'] = state_value
-
-    save_user_settings()
-    control_led(state)
-
-    return jsonify({"message": f"LED state updated to {state_value}"}), 200
-
 def get_alarm_time():
-    global alarm_time
-    if alarm_time:
-        return {"alarm_time": alarm_time}
-    else:
-        return {"message": "No alarm time set"}
+    global alarm_time, alarm_state
+    return {"alarm_time": alarm_time, "alarm_state": alarm_state}
 
 def set_alarm_time(data):
-    global alarm_time
-    if "alarm_time" not in data:
-        return {"error": "Missing 'alarm_time' parameter"}, 400
+    global alarm_time, alarm_state
+    if "alarm_time" not in data or "alarm_state" not in data:
+        return {"error": "Missing 'alarm_time' or 'alarm_state' parameter"}, 400
 
     alarm_time = data["alarm_time"]
+    alarm_state = data["alarm_state"]
     save_user_settings()
+    control_led(alarm_state)
 
-    return {"message": f"Alarm time set to {alarm_time}"}, 200
+    return {"message": f"Alarm time set to {alarm_time} and state set to {alarm_state}"}, 200
 
 def get_rgbw_values():
     global rgbw_values

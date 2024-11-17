@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
-def check_alarm(state, alarm_time):
-    if state != "alarm":
-        print("State is not 'alarm'. No action required.")
+def check_alarm(alarm_state, alarm_time):
+    if alarm_state != "enabled":
+        print("Alarm is not enabled. No action required.")
         return
 
     if not alarm_time:
