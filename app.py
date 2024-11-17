@@ -9,6 +9,7 @@ from threading import Thread
 from led import set_led_colours
 import config
 import time
+from rotary import start_rotary_thread
 
 app = Flask(__name__)
 
@@ -79,7 +80,7 @@ def set_colours():
     return jsonify({"message": f"LED colours set to R: {red_value}, G: {green_value}, B: {blue_value}, W: {white_value}"}), 200
 
 if __name__ == '__main__':
-    # Start the background thread for periodic checks
+    start_rotary_thread()
     alarm_thread = Thread(target=periodic_alarm_check)
     alarm_thread.daemon = True  # Allows thread to exit when main program exits
     alarm_thread.start()
