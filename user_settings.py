@@ -42,7 +42,7 @@ def control_led(state):
     Control the LED based on the current state.
     """
     if state.get('state') == "alarm":
-        set_brightness(50)
+        set_brightness(10)
     else:
         led_off()
 
