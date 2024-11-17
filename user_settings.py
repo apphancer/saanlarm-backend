@@ -50,6 +50,16 @@ def set_state(data):
     if state_value not in valid_states:
         return jsonify({"error": "Invalid state"}), 400
 
+    if state_value == "cozy":
+        rgbw_data = {"red": 128, "green": 0, "blue": 128, "white": 0}
+        set_rgbw_values(rgbw_data)
+    elif state_value == "reading":
+        rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 255}
+        set_rgbw_values(rgbw_data)
+    elif state_value == "off":
+        rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}
+        set_rgbw_values(rgbw_data)
+
     if isinstance(state, str):
         state = {"state": state_value}
     else:
