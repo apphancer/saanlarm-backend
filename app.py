@@ -3,10 +3,9 @@ from control_state import control_state
 from alarm_checker import check_alarm
 from user_settings import (
     load_user_settings, save_user_settings, get_state,
-    set_state, get_alarm_time, set_alarm_time, rgbw_values
+    set_state, get_alarm_time, set_alarm_time, get_rgbw_values, set_rgbw_values
 )
 from threading import Thread
-from led import set_led_colours
 import config
 import time
 from rotary import start_rotary_thread
@@ -50,7 +49,7 @@ def get_colours():
     """
     Endpoint to get the current RGBW values.
     """
-    return jsonify(rgbw_values), 200  # Return current rgbw_values
+   return jsonify(get_rgbw_values()), 200
 
 @app.route('/colours', methods=['POST'])
 def set_colours():
@@ -58,26 +57,8 @@ def set_colours():
     Endpoint to set the LED colours using RGBW values.
     """
     data = request.get_json()
-    required_keys = ['red', 'green', 'blue', 'white']
-    if not all(key in data for key in required_keys):
-        return jsonify({"error": "Missing RGBW values"}), 400
-
-    red_value = data['red']
-    green_value = data['green']
-    blue_value = data['blue']
-    white_value = data['white']
-
-    # Ensure values are in the correct range
-    if not all(0 <= value <= 255 for value in [red_value, green_value, blue_value, white_value]):
-        return jsonify({"error": "RGBW values must be between 0 and 255"}), 400
-
-    # Update rgbw_values and save settings
-    rgbw_values.update({"red": red_value, "green": green_value, "blue": blue_value, "white": white_value})
-    save_user_settings()  # Persist RGBW values
-
-    set_led_colours(red_value, green_value, blue_value, white_value)
-
-    return jsonify({"message": f"LED colours set to R: {red_value}, G: {green_value}, B: {blue_value}, W: {white_value}"}), 200
+    response, status_code = set_rgbw_values(data)
+    return jsonify(response), status_code
 
 if __name__ == '__main__':
     start_rotary_thread()

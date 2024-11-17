@@ -3,6 +3,7 @@ import json
 from flask import jsonify
 from control_state import control_state
 from led_control import led_off, set_brightness
+from led import set_led_colours
 
 USER_SETTINGS_FILE = 'user_settings.json'
 
@@ -100,3 +101,38 @@ def set_alarm_time(data):
     save_user_settings()  # Persist alarm time
 
     return {"message": f"Alarm time set to {alarm_time}"}, 200
+
+
+def get_rgbw_values():
+    """
+    Retrieve the current RGBW values.
+    """
+    global rgbw_values
+    load_user_settings()  # Ensure the latest values are loaded
+    return rgbw_values
+
+def set_rgbw_values(data):
+    """
+    Set the RGBW values for the LED.
+    """
+    global rgbw_values
+    required_keys = ['red', 'green', 'blue', 'white']
+    if not all(key in data for key in required_keys):
+        return {"error": "Missing RGBW values"}, 400
+
+    # Ensure values are in the correct range
+    if not all(0 <= data[key] <= 255 for key in required_keys):
+        return {"error": "RGBW values must be between 0 and 255"}, 400
+
+    # Update the RGBW values and save the settings
+    rgbw_values.update({key: data[key] for key in required_keys})
+    save_user_settings()  # Persist the changes
+
+    set_led_colours(
+        rgbw_values['red'],
+        rgbw_values['green'],
+        rgbw_values['blue'],
+        rgbw_values['white']
+    )
+
+    return {"message": "RGBW values updated successfully"}, 200
