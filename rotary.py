@@ -4,7 +4,7 @@ import gpiozero
 import threading
 import time
 from config import ROTARY_SW
-from user_settings import set_rgbw_values
+from user_settings import load_user_settings, set_alarm_state, set_rgbw_values
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,7 +21,13 @@ def change_callback(scale_position):
     print(f'Scale position is {scale_position}, brightness {brightness}, response: {response}, status code: {status_code}')
 
 def sw_callback():
-    print('Switch pressed!')
+    load_user_settings()
+    global alarm_state
+
+    if alarm_state == "enabled":
+        set_alarm_state("disabled")
+    else:
+        set_alarm_state("enabled")
 
 EVENT_DEVICE_PATH = '/dev/input/event0'
 

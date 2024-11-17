@@ -46,11 +46,15 @@ def set_alarm_time(data):
         return {"error": "Missing 'alarm_time' or 'alarm_state' parameter"}, 400
 
     alarm_time = data["alarm_time"]
-    alarm_state = data["alarm_state"]
-    save_user_settings()
-    control_led(alarm_state)
+    set_alarm_state(data["alarm_state"])
 
     return {"message": f"Alarm time set to {alarm_time} and state set to {alarm_state}"}, 200
+
+def set_alarm_state(state):
+    global alarm_state
+    alarm_state = state
+    save_user_settings()
+    control_led(alarm_state)
 
 def get_rgbw_values():
     global rgbw_values
