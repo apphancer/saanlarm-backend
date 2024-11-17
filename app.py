@@ -49,7 +49,7 @@ def get_colours():
     """
     Endpoint to get the current RGBW values.
     """
-   return jsonify(get_rgbw_values()), 200
+    return jsonify(get_rgbw_values()), 200
 
 @app.route('/colours', methods=['POST'])
 def set_colours():
