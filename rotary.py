@@ -4,7 +4,7 @@ import gpiozero
 import threading
 import time
 from config import ROTARY_SW
-from user_settings import load_user_settings, set_alarm_state, set_rgbw_values
+from user_settings import load_user_settings, set_alarm_state, get_alarm_state, set_rgbw_values
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,8 +21,8 @@ def change_callback(scale_position):
     print(f'Scale position is {scale_position}, brightness {brightness}, response: {response}, status code: {status_code}')
 
 def sw_callback():
-    load_user_settings()
-    global alarm_state
+    load_user_settings()  # Ensure current settings are loaded
+    alarm_state = get_alarm_state()  # Retrieve current alarm state
 
     if alarm_state == "enabled":
         set_alarm_state("disabled")

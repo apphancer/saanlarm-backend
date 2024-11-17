@@ -41,7 +41,7 @@ def get_alarm_time():
     return {"alarm_time": alarm_time, "alarm_state": alarm_state}
 
 def set_alarm_time(data):
-    global alarm_time, alarm_state
+    global alarm_time
     if "alarm_time" not in data or "alarm_state" not in data:
         return {"error": "Missing 'alarm_time' or 'alarm_state' parameter"}, 400
 
@@ -55,6 +55,10 @@ def set_alarm_state(state):
     alarm_state = state
     save_user_settings()
     control_led(alarm_state)
+
+def get_alarm_state():
+    global alarm_state
+    return alarm_state
 
 def get_rgbw_values():
     global rgbw_values
