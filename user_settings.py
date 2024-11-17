@@ -1,7 +1,6 @@
 import os
 import json
 from flask import jsonify
-from control_state import control_state
 from led_control import led_off, set_brightness
 from led import set_led_colours
 
@@ -57,7 +56,6 @@ def set_state(data):
         state['state'] = state_value
 
     save_user_settings()
-    control_state(state)
     control_led(state)
 
     return jsonify({"message": f"LED state updated to {state_value}"}), 200
