@@ -14,9 +14,10 @@ app = Flask(__name__)
 load_user_settings()
 
 alarm_triggered = False  # Flag to ensure the alarm starts only once
+fade_in_running = False  # Flag to track fade-in state
 
 def periodic_alarm_check():
-    global running, alarm_triggered
+    global running, alarm_triggered, fade_in_running
     running = True
 
     while running:
@@ -30,10 +31,20 @@ def periodic_alarm_check():
             if result == "ALARM STARTING" and not alarm_triggered:
                 print(result)  # Print ALARM STARTING only once
                 alarm_triggered = True
-                fade_in_led()  # Start fading in the LED brightness
+                if not fade_in_running:
+                    fade_in_running = True
+                    fade_in_led(fade_in_completed)
             elif result != "ALARM STARTING":
                 alarm_triggered = False  # Reset the flag if not in the alarm window
+                if fade_in_running:
+                    fade_in_running = False
+                    print("ALARM STOPPED")
         time.sleep(60)
+
+def fade_in_completed():
+    global fade_in_running
+    fade_in_running = False
+    print("ALARM STOPPED")
 
 @app.route('/alarm', methods=['GET'])
 def get_alarm_endpoint():

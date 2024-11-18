@@ -29,7 +29,7 @@ def check_alarm(alarm_state, alarm_time):
     else:
         return f"Alarm not yet due. Time remaining: {time_difference}"
 
-def fade_in_led():
+def fade_in_led(callback):
     duration_seconds = config.LED_FADE_IN_DURATION_MINUTES * 60  # convert minutes to seconds
     steps = 255
     step_duration = duration_seconds / steps
@@ -38,3 +38,5 @@ def fade_in_led():
         rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": brightness}
         response, status_code = set_rgbw_values(rgbw_data)
         time.sleep(step_duration)  # wait for the next step
+
+    callback()
