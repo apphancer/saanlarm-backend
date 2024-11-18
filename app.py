@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from alarm_checker import check_alarm
 from user_settings import (
-    load_user_settings, save_user_settings, get_alarm_time, set_alarm_time, get_rgbw_values, set_rgbw_values
+    load_user_settings, save_user_settings, get_alarm_time, set_alarm_time, get_rgbw_values, set_rgbw_values, get_alarm_state
 )
 from threading import Thread
 import config
@@ -10,6 +10,7 @@ from rotary import start_rotary_thread
 
 app = Flask(__name__)
 
+# Load user settings at startup
 load_user_settings()
 
 def periodic_alarm_check():
@@ -17,8 +18,15 @@ def periodic_alarm_check():
     running = True
 
     while running:
-        if get_state()['state'] == "alarm" and alarm_time:
-            check_alarm(get_state()['state'], alarm_time)
+        alarm_info = get_alarm_time()
+        alarm_time = alarm_info['alarm_time']
+        alarm_state = alarm_info['alarm_state']
+
+        # Perform the alarm check
+        if alarm_state == "enabled" and alarm_time:
+            result = check_alarm(alarm_state, alarm_time)
+            if result == "ALARM STARTING":
+                print(result)  # Ensures ALARM STARTING is printed just once per condition met
         time.sleep(60)
 
 @app.route('/alarm', methods=['GET'])
@@ -28,7 +36,8 @@ def get_alarm_endpoint():
 @app.route('/alarm', methods=['POST'])
 def set_alarm_endpoint():
     data = request.get_json()
-    return set_alarm_time(data)
+    response, status_code = set_alarm_time(data)
+    return jsonify(response), status_code
 
 @app.route('/colours', methods=['GET'])
 def get_colours():

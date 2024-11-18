@@ -1,4 +1,4 @@
-# Saanlarm Backend (Raspberry Pi)
+# Saanlarm Backend (Raspberry Pi) ⏰🌅
 
 This is the backend part of the Saanlarm project, which runs on the Raspberry Pi. It exposes an API to control the LED strip based on various states (e.g., off, reading, cozy, alarm). The API is built using Flask.
 
