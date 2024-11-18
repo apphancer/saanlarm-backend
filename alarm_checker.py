@@ -23,11 +23,3 @@ def check_alarm(alarm_state, alarm_time):
         return "ALARM STARTING"
     else:
         return f"Alarm not yet due. Time remaining: {time_difference}"
-
-# Example usage
-if __name__ == "__main__":
-    alarm_state = "enabled"  # This should ideally come from the JSON data
-    alarm_time = "14:30"     # This should also come from the JSON data
-
-    result = check_alarm(alarm_state, alarm_time)
-    print(result)
