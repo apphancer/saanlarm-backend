@@ -54,7 +54,7 @@ def fade_in_led(callback):
 
 def stop_alarm():
     global fade_in_running
-    fade_in_running = False
+#     fade_in_running = False
     set_alarm_state("disabled")
     rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}  # todo: maybe instead of turning off, we turn to the last stored setting?
     response, status_code = set_rgbw_values(rgbw_data)
