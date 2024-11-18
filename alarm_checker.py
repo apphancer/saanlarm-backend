@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
 import time
 import config
-from user_settings import set_rgbw_values
+from user_settings import set_rgbw_values, set_alarm_state
+
+fade_in_running = False  # Flag to track fade-in state
 
 def check_alarm(alarm_state, alarm_time):
     if alarm_state != "enabled":
@@ -30,6 +32,8 @@ def check_alarm(alarm_state, alarm_time):
         return f"Alarm not yet due. Time remaining: {time_difference}"
 
 def fade_in_led(callback):
+    global fade_in_running
+    fade_in_running = True
     duration_seconds = config.LED_FADE_IN_DURATION_MINUTES * 60  # convert minutes to seconds
     steps = 255
     step_duration = duration_seconds / steps
@@ -40,3 +44,11 @@ def fade_in_led(callback):
         time.sleep(step_duration)  # wait for the next step
 
     callback()
+
+def stop_alarm():
+    global fade_in_running
+    set_alarm_state("disabled")
+    rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0} # todo: maybe instead of turning off, we turn to the last stored setting?
+    response, status_code = set_rgbw_values(rgbw_data)
+    fade_in_running = False
+    print("ALARM STOPPED")

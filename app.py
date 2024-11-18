@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from alarm_checker import check_alarm, fade_in_led
+from alarm_checker import check_alarm, fade_in_led, stop_alarm, fade_in_running
 from user_settings import (
-    load_user_settings, save_user_settings, get_alarm_time, set_alarm_time, get_rgbw_values, set_rgbw_values
+    load_user_settings, save_user_settings, get_alarm_time, set_alarm_time, get_rgbw_values, set_rgbw_values, get_alarm_state, set_alarm_state
 )
 from threading import Thread
 import config
@@ -14,8 +14,8 @@ app = Flask(__name__)
 load_user_settings()
 
 alarm_triggered = False  # Flag to ensure the alarm starts only once
-fade_in_running = False  # Flag to track fade-in state
 
+# can this be moved to alarm_checker.py?
 def periodic_alarm_check():
     global running, alarm_triggered, fade_in_running
     running = True
@@ -32,7 +32,6 @@ def periodic_alarm_check():
                 print(result)  # Print ALARM STARTING only once
                 alarm_triggered = True
                 if not fade_in_running:
-                    fade_in_running = True
                     fade_in_led(fade_in_completed)
             elif result != "ALARM STARTING":
                 alarm_triggered = False  # Reset the flag if not in the alarm window
@@ -41,6 +40,7 @@ def periodic_alarm_check():
                     print("ALARM STOPPED")
         time.sleep(60)
 
+# can this be moved to alarm_checker.py?
 def fade_in_completed():
     global fade_in_running
     fade_in_running = False
@@ -50,7 +50,7 @@ def fade_in_completed():
 def get_alarm_endpoint():
     return jsonify(get_alarm_time())
 
-@app.route('/alarm', methods=['POST'])
+@app.route('/alarm', methods['POST'])
 def set_alarm_endpoint():
     data = request.get_json()
     response, status_code = set_alarm_time(data)

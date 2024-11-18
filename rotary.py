@@ -5,6 +5,7 @@ import threading
 import time
 from config import ROTARY_SW
 from user_settings import load_user_settings, set_alarm_state, get_alarm_state, set_rgbw_values
+from alarm_checker import stop_alarm, fade_in_running  # Import the necessary functions and state
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,13 +22,19 @@ def change_callback(scale_position):
     print(f'Scale position is {scale_position}, brightness {brightness}, response: {response}, status code: {status_code}')
 
 def sw_callback():
+    global fade_in_running  # Use the global fade_in_running flag
     load_user_settings()  # Ensure current settings are loaded
     alarm_state = get_alarm_state()  # Retrieve current alarm state
 
-    if alarm_state == "enabled":
-        set_alarm_state("disabled")
+    if fade_in_running:
+        stop_alarm()
     else:
-        set_alarm_state("enabled")
+        if alarm_state == "enabled":
+            set_alarm_state("disabled")
+            print("Alarm disabled")
+        else:
+            set_alarm_state("enabled")
+            print("Alarm enabled")
 
 EVENT_DEVICE_PATH = '/dev/input/event0'
 
