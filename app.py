@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from alarm_checker import periodic_alarm_check, fade_in_completed, fade_in_lock  # Import fade_in_lock
+from alarm_checker import periodic_alarm_check, fade_in_completed
 from threading import Thread
 from user_settings import (
     load_user_settings, save_user_settings, get_alarm_time, set_alarm_time, get_rgbw_values, set_rgbw_values, get_alarm_state, set_alarm_state
