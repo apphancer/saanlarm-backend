@@ -2,7 +2,9 @@ from datetime import datetime, timedelta
 import time
 import config
 from user_settings import set_rgbw_values, set_alarm_state, get_alarm_time
+import threading
 
+fade_in_lock = threading.Lock()
 fade_in_running = False  # Flag to track fade-in state
 alarm_triggered = False  # Flag to ensure the alarm starts only once
 running = False  # Ensure that the periodic alarm checker runs
@@ -35,21 +37,25 @@ def check_alarm(alarm_state, alarm_time):
 
 def fade_in_led(callback):
     global fade_in_running
-    fade_in_running = True
+    with fade_in_lock:
+        fade_in_running = True
+
     print(f"Fade-in started: fade_in_running = {fade_in_running}")  # Debugging
     duration_seconds = config.LED_FADE_IN_DURATION_MINUTES * 60  # convert minutes to seconds
     steps = 255
     step_duration = duration_seconds / steps
 
     for brightness in range(steps):
-        if not fade_in_running:
-            break
+            with fade_in_lock:
+                if not fade_in_running:
+                    break
         rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": brightness}
         response, status_code = set_rgbw_values(rgbw_data)
         time.sleep(step_duration)  # wait for the next step
 
-    if fade_in_running:
-        callback()
+    with fade_in_lock:
+            if fade_in_running:
+                callback()
     print(f"Fade-in completed: fade_in_running = {fade_in_running}")  # Debugging
 
 def stop_alarm():
