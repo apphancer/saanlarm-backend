@@ -26,6 +26,9 @@ def sw_callback():
     load_user_settings()  # Ensure current settings are loaded
     alarm_state = get_alarm_state()  # Retrieve current alarm state
 
+    # Debugging: Print the value of fade_in_running
+    print(f"fade_in_running: {fade_in_running}")
+
     if fade_in_running:
         print("Fade-in running, stopping alarm...")
         stop_alarm()
