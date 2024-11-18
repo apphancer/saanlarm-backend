@@ -5,7 +5,7 @@ import threading
 import time
 from config import ROTARY_SW
 from user_settings import load_user_settings, set_alarm_state, get_alarm_state, set_rgbw_values
-from alarm_checker import stop_alarm, fade_in_running  # Import the necessary functions and state
+from alarm_checker import stop_alarm, fade_in_running
 
 logging.basicConfig(level=logging.INFO)
 
