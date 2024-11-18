@@ -27,6 +27,7 @@ def sw_callback():
     alarm_state = get_alarm_state()  # Retrieve current alarm state
 
     if fade_in_running:
+        print("Fade-in running, stopping alarm...")
         stop_alarm()
     else:
         if alarm_state == "enabled":

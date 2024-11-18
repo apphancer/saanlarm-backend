@@ -39,16 +39,19 @@ def fade_in_led(callback):
     step_duration = duration_seconds / steps
 
     for brightness in range(steps):
+        if not fade_in_running:
+            break
         rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": brightness}
         response, status_code = set_rgbw_values(rgbw_data)
         time.sleep(step_duration)  # wait for the next step
 
-    callback()
+    if fade_in_running:
+        callback()
 
 def stop_alarm():
     global fade_in_running
-    set_alarm_state("disabled")
-    rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0} # todo: maybe instead of turning off, we turn to the last stored setting?
-    response, status_code = set_rgbw_values(rgbw_data)
     fade_in_running = False
+    set_alarm_state("disabled")
+    rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}  # todo: maybe instead of turning off, we turn to the last stored setting?
+    response, status_code = set_rgbw_values(rgbw_data)
     print("ALARM STOPPED")
