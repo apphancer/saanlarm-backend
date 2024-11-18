@@ -50,7 +50,7 @@ def fade_in_completed():
 def get_alarm_endpoint():
     return jsonify(get_alarm_time())
 
-@app.route('/alarm', methods['POST'])
+@app.route('/alarm', methods=['POST'])
 def set_alarm_endpoint():
     data = request.get_json()
     response, status_code = set_alarm_time(data)
