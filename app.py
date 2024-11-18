@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from alarm_checker import check_alarm
+from alarm_checker import check_alarm, fade_in_led
 from user_settings import (
     load_user_settings, save_user_settings, get_alarm_time, set_alarm_time, get_rgbw_values, set_rgbw_values
 )
@@ -7,7 +7,6 @@ from threading import Thread
 import config
 import time
 from rotary import start_rotary_thread
-from datetime import timedelta
 
 app = Flask(__name__)
 
@@ -15,18 +14,6 @@ app = Flask(__name__)
 load_user_settings()
 
 alarm_triggered = False  # Flag to ensure the alarm starts only once
-
-
-def fade_in_led():
-    duration_seconds = 5 * 60  # 5 minutes
-    steps = 255
-    step_duration = duration_seconds / steps
-
-    for brightness in range(steps):
-        rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": brightness}
-        response, status_code = set_rgbw_values(rgbw_data)
-        time.sleep(step_duration)  # wait for the next step
-
 
 def periodic_alarm_check():
     global running, alarm_triggered

@@ -2,6 +2,7 @@ HOST = "0.0.0.0"
 PORT = 5000
 LED_DATA_GPIO = 21
 NUM_PIXELS = 150
+LED_FADE_IN_DURATION_MINUTES = 5
 
 
 # GPIO pins for the rotary encoder
