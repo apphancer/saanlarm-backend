@@ -5,7 +5,7 @@ import threading
 import time
 from config import ROTARY_SW
 from user_settings import load_user_settings, set_alarm_state, get_alarm_state, set_rgbw_values
-from alarm_checker import stop_alarm, fade_in_running
+from alarm_checker import stop_alarm, fade_in_running_event  # Import Event object
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,14 +22,13 @@ def change_callback(scale_position):
     print(f'Scale position is {scale_position}, brightness {brightness}, response: {response}, status code: {status_code}')
 
 def sw_callback():
-    global fade_in_running
     load_user_settings()  # Ensure current settings are loaded
     alarm_state = get_alarm_state()  # Retrieve current alarm state
 
-    # Debugging: Print the value of fade_in_running
-    print(f"sw_callback: fade_in_running = {fade_in_running}")
+    # Debugging: Print the state of fade_in_running_event
+    print(f"sw_callback: fade_in_running_event is set = {fade_in_running_event.is_set()}")
 
-    if fade_in_running:
+    if fade_in_running_event.is_set():
         print("Fade-in running, stopping alarm...")
         stop_alarm()
     else:
