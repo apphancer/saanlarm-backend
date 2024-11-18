@@ -36,6 +36,7 @@ def check_alarm(alarm_state, alarm_time):
 def fade_in_led(callback):
     global fade_in_running
     fade_in_running = True
+    print(f"Fade-in started: fade_in_running = {fade_in_running}")  # Debugging
     duration_seconds = config.LED_FADE_IN_DURATION_MINUTES * 60  # convert minutes to seconds
     steps = 255
     step_duration = duration_seconds / steps
@@ -49,6 +50,7 @@ def fade_in_led(callback):
 
     if fade_in_running:
         callback()
+    print(f"Fade-in completed: fade_in_running = {fade_in_running}")  # Debugging
 
 def stop_alarm():
     global fade_in_running
@@ -66,6 +68,9 @@ def periodic_alarm_check():
         alarm_info = get_alarm_time()
         alarm_time = alarm_info['alarm_time']
         alarm_state = alarm_info['alarm_state']
+
+        # Debugging
+        print(f"Checking alarm. Alarm triggered: {alarm_triggered}, fade_in_running: {fade_in_running}")
 
         # Perform the alarm check
         if alarm_state == "enabled" and alarm_time:
@@ -85,4 +90,4 @@ def periodic_alarm_check():
 def fade_in_completed():
     global fade_in_running
     fade_in_running = False
-    print("ALARM STOPPED")
+    print("Fade-in completed: fade_in_running set to False")  # Debugging

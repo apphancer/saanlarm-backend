@@ -22,12 +22,12 @@ def change_callback(scale_position):
     print(f'Scale position is {scale_position}, brightness {brightness}, response: {response}, status code: {status_code}')
 
 def sw_callback():
-    global fade_in_running  # Use the global fade_in_running flag
+    global fade_in_running
     load_user_settings()  # Ensure current settings are loaded
     alarm_state = get_alarm_state()  # Retrieve current alarm state
 
     # Debugging: Print the value of fade_in_running
-    print(f"fade_in_running: {fade_in_running}")
+    print(f"sw_callback: fade_in_running = {fade_in_running}")
 
     if fade_in_running:
         print("Fade-in running, stopping alarm...")
