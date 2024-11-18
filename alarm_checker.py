@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 import time
 import config
 from user_settings import set_rgbw_values, set_alarm_state, get_alarm_time
-from threading import Lock, Thread  # Add Thread here
+import threading
 
+fade_in_lock = threading.Lock()
 fade_in_running = False  # Flag to track fade-in state
 alarm_triggered = False  # Flag to ensure the alarm starts only once
 running = False  # Ensure that the periodic alarm checker runs
-fade_in_lock = Lock()  # Initialize lock for fade_in_running
 
 def check_alarm(alarm_state, alarm_time):
     if alarm_state != "enabled":
@@ -39,8 +39,8 @@ def fade_in_led(callback):
     global fade_in_running
     with fade_in_lock:
         fade_in_running = True
-    print(f"Fade-in started: fade_in_running = {fade_in_running}")  # Debugging
 
+    print(f"Fade-in started: fade_in_running = {fade_in_running}")  # Debugging
     duration_seconds = config.LED_FADE_IN_DURATION_MINUTES * 60  # convert minutes to seconds
     steps = 255
     step_duration = duration_seconds / steps
@@ -48,11 +48,11 @@ def fade_in_led(callback):
     for brightness in range(steps):
         with fade_in_lock:
             if not fade_in_running:
-                print(f"Fade-in interrupted at brightness: {brightness}")  # Debugging
                 break
+
+
         rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": brightness}
         response, status_code = set_rgbw_values(rgbw_data)
-        print(f"Setting brightness to {brightness}, Response: {response}, Status code: {status_code}")  # Debugging
         time.sleep(step_duration)  # wait for the next step
 
     with fade_in_lock:
@@ -62,11 +62,10 @@ def fade_in_led(callback):
 
 def stop_alarm():
     global fade_in_running
+    fade_in_running = False
     set_alarm_state("disabled")
-    rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}  # turn off
+    rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}  # todo: maybe instead of turning off, we turn to the last stored setting?
     response, status_code = set_rgbw_values(rgbw_data)
-    with fade_in_lock:
-        fade_in_running = False
     print("ALARM STOPPED")
 
 def periodic_alarm_check():
@@ -87,19 +86,16 @@ def periodic_alarm_check():
             if result == "ALARM STARTING" and not alarm_triggered:
                 print(result)  # Print ALARM STARTING only once
                 alarm_triggered = True
-                with fade_in_lock:
-                    if not fade_in_running:
-                        fade_thread = Thread(target=fade_in_led, args=(fade_in_completed,))
-                        fade_thread.start()
+                if not fade_in_running:
+                    fade_in_led(fade_in_completed)
             elif result != "ALARM STARTING":
                 alarm_triggered = False  # Reset the flag if not in the alarm window
-                with fade_in_lock:
+                if fade_in_running:
                     fade_in_running = False
                     print("ALARM STOPPED")
         time.sleep(60)
 
 def fade_in_completed():
     global fade_in_running
-    with fade_in_lock:
-        fade_in_running = False
+    fade_in_running = False
     print("Fade-in completed: fade_in_running set to False")  # Debugging

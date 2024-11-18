@@ -5,7 +5,7 @@ import threading
 import time
 from config import ROTARY_SW
 from user_settings import load_user_settings, set_alarm_state, get_alarm_state, set_rgbw_values
-from alarm_checker import stop_alarm, fade_in_running, fade_in_lock  # Add fade_in_lock
+from alarm_checker import stop_alarm, fade_in_running, fade_in_lock
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,15 +26,17 @@ def sw_callback():
     load_user_settings()  # Ensure current settings are loaded
     alarm_state = get_alarm_state()  # Retrieve current alarm state
 
-    # Debugging: Print the value of fade_in_running
     with fade_in_lock:
-        print(f"sw_callback: fade_in_running = {fade_in_running}")
+        current_fade_in_running = fade_in_running
 
-    with fade_in_lock:
-        if fade_in_running:
-            print("Fade-in running, stopping alarm...")
-            stop_alarm()
-        elif alarm_state == "enabled":
+    # Debugging: Print the value of fade_in_running
+    print(f"sw_callback: fade_in_running = {current_fade_in_running}")
+
+    if current_fade_in_running:
+        print("Fade-in running, stopping alarm...")
+        stop_alarm()
+    else:
+        if alarm_state == "enabled":
             set_alarm_state("disabled")
             print("Alarm disabled")
         else:
