@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 from config import LED_GPIO, LED_GND
 import time
 
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(LED_GPIO, GPIO.OUT)
