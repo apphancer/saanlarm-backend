@@ -10,6 +10,12 @@ This is the backend part of the Saanlarm project, which runs on the Raspberry Pi
 - git installed on your Raspberry Pi
 - pip for installing dependencies
 
+```bash
+sudo apt update
+sudo apt install git
+sudo apt install python3-pip
+```
+
 ### Hardware 
 
 - Raspberry Pi
@@ -20,7 +26,7 @@ This is the backend part of the Saanlarm project, which runs on the Raspberry Pi
 
 ### 1. Clone the repository (or create a directory for the project)
 
-`git clone <repo-url>`
+`git clone git@github.com:apphancer/saanlarm-backend.git`
 `cd saanlarm-backend`
 
 
@@ -33,57 +39,47 @@ Install the dependencies with sudo because accessing the GPIO pins on a Raspberr
 
 ### 3. Rotary Encoder
 
-`sudo nano /boot/firmware/config.txt`
+Depending on the version of RaspianOS:
+`sudo nano /boot/config.txt` or `sudo nano /boot/firmware/config.txt`
 
 Add the following line at the end of the file, replacing pin_a=17 and pin_b=18 with your actual GPIO pins:
 `dtoverlay=rotary-encoder,pin_a=17,pin_b=18,relative_axis=1,steps-per-period=1`
 
+Then reboot
 `sudo reboot`
 
 
 
 ## Running the Backend
 
-### 1. Start the Flask server
-
 Run the following command to start the API server on the Raspberry Pi:
 
-`python app.py`
+`sudo python app.py`
 
 This will start the server on http://0.0.0.0:5000
 
 
-## API Endpoints
-
-### 1. GET /led-state
-
-Retrieves the current state of the LED strip.
-Example response:
-
-`{ "state": "off" }`
+## To run a daemon
 
 
-### 2. POST /led-state
+`sudo apt-get install supervisor`
 
-Sets the state of the LED strip. The request body must include a JSON object with a state key.
+Create a .conf file for your script (e.g., /etc/supervisor/conf.d/app.conf):
 
-Valid states:
-
-- "off"
-- "reading"
-- "cozy"
-- "alarm"
-
-Example request:
-
-```json
-{
-  "state": "reading"  
-}
+```ini
+[program:saanlarm]
+command=sudo /usr/bin/python /home/pi/saanlarm-backend/app.py
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/saanlarm.err.log
+stdout_logfile=/var/log/saanlarm.out.log
+user=pi
+environment=HOME="/home/pi"
 ```
 
-Example response:
-
-```json
-{ "message": "LED state updated to reading" }
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start saanlarm
+sudo supervisorctl status saanlarm
 ```
