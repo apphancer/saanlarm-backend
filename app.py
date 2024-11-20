@@ -6,15 +6,12 @@ from user_settings import (
 )
 from rotary import start_rotary_thread
 import config_local as config
-from auth import token_required, generate_token
+from auth import token_required, generate_token, USERS
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = config.SECRET_KEY
 
 load_user_settings()
-
-USERS = {
-    config.USER: generate_password_hash(config.PASSWORD)
-}
 
 @app.route('/login', methods=['POST'])
 def login():

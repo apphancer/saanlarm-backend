@@ -3,8 +3,13 @@ import datetime
 from functools import wraps
 from flask import request, jsonify
 import config_local as config
+from werkzeug.security import generate_password_hash, check_password_hash
 
 SECRET_KEY = config.SECRET_KEY
+
+USERS = {
+    config.USER: generate_password_hash(config.PASSWORD)
+}
 
 def token_required(f):
     @wraps(f)
