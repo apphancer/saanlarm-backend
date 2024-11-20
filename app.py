@@ -25,8 +25,11 @@ def login():
     password = auth['password']
 
     if username in USERS and check_password_hash(USERS[username], password):
-        token = generate_token(username)
-        return jsonify({'token': token}), 200
+        token, expiration_time = generate_token(username)
+        return jsonify({
+            'token': token,
+            'expires_at': expiration_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+        }), 200
 
     return jsonify({'message': 'Invalid credentials'}), 401
 
