@@ -31,8 +31,9 @@ def token_required(f):
     return decorated
 
 def generate_token(username):
+    expiration_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
     token = jwt.encode({
         'user': username,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+        'exp': expiration_time
     }, SECRET_KEY, algorithm="HS256")
-    return token
+    return token, expiration_time
