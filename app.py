@@ -32,24 +32,24 @@ def login():
 
 @app.route('/alarm', methods=['GET'])
 @token_required
-def get_alarm_endpoint():
+def get_alarm_endpoint(user):
     return jsonify(get_alarm_time())
 
 @app.route('/alarm', methods=['POST'])
 @token_required
-def set_alarm_endpoint():
+def set_alarm_endpoint(user):
     data = request.get_json()
     response, status_code = set_alarm_time(data)
     return jsonify(response), status_code
 
 @app.route('/colours', methods=['GET'])
 @token_required
-def get_colours():
+def get_colours(user):
     return jsonify(get_rgbw_values()), 200
 
 @app.route('/colours', methods=['POST'])
 @token_required
-def set_colours():
+def set_colours(user):
     data = request.get_json()
     response, status_code = set_rgbw_values(data)
     return jsonify(response), status_code
