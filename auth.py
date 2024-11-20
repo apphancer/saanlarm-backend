@@ -9,19 +9,20 @@ SECRET_KEY = config.SECRET_KEY
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
-        if 'x-access-tokens' in request.headers:
-            token = request.headers['x-access-tokens']
+        token = request.headers.get('x-access-tokens')
 
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
 
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        except:
+            current_user = data['user']
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token expired!'}), 401
+        except jwt.InvalidTokenError:
             return jsonify({'message': 'Token is invalid!'}), 401
 
-        return f(*args, **kwargs)
+        return f(current_user, *args, **kwargs)
     return decorated
 
 def generate_token(username):

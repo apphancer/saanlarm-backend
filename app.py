@@ -12,14 +12,24 @@ app = Flask(__name__)
 
 load_user_settings()
 
+USERS = {
+    config.USER: generate_password_hash(config.PASSWORD)
+}
+
 @app.route('/login', methods=['POST'])
 def login():
     auth = request.get_json()
 
-    # Authenticate username and password.
-    if auth and auth['username'] == 'admin' and auth['password'] == 'password':
-        token = generate_token(auth['username'])
+    if not auth or not auth['username'] or not auth['password']:
+        return jsonify({'message': 'Missing credentials'}), 401
+
+    username = auth['username']
+    password = auth['password']
+
+    if username in USERS and check_password_hash(USERS[username], password):
+        token = generate_token(username)
         return jsonify({'token': token}), 200
+
     return jsonify({'message': 'Invalid credentials'}), 401
 
 @app.route('/alarm', methods=['GET'])

@@ -15,4 +15,6 @@ ROTARY_SW = 26
 LED_GPIO = 13
 LED_GND = 14
 
+USER = 'admin'
+PASSWORD = 'password'
 SECRET_KEY = 'your secret key here'
