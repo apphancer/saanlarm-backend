@@ -1,6 +1,6 @@
 import board
 import neopixel
-import config
+import config_local
 
 pixel_pin = getattr(board, f"D{config.LED_DATA_GPIO}")
 num_pixels = config.NUM_PIXELS

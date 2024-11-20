@@ -49,6 +49,12 @@ Then reboot
 `sudo reboot`
 
 
+### 4. Configuration
+
+`cp config.py config_local.py`
+
+Then change settings inside config_local.py
+
 
 ## Running the Backend
 

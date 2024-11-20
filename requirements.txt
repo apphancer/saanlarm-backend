@@ -4,3 +4,4 @@ adafruit-circuitpython-neopixel
 pyky040
 evdev
 gpiozero
+PyJWT

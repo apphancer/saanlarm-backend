@@ -14,3 +14,5 @@ ROTARY_SW = 26
 # GPIO for the LED
 LED_GPIO = 13
 LED_GND = 14
+
+SECRET_KEY = 'your secret key here'
