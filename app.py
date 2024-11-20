@@ -5,7 +5,7 @@ from user_settings import (
     load_user_settings, save_user_settings, get_alarm_time, set_alarm_time, get_rgbw_values, set_rgbw_values, get_alarm_state, set_alarm_state
 )
 from rotary import start_rotary_thread
-import config_local
+import config_local as config
 from auth import token_required, generate_token
 
 app = Flask(__name__)

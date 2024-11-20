@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import time
-import config_local
+import config_local as config
 from user_settings import set_rgbw_values, set_alarm_state, get_alarm_time
 from threading import Event
 
