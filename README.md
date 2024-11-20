@@ -69,6 +69,7 @@ Create a .conf file for your script (e.g., /etc/supervisor/conf.d/app.conf):
 ```ini
 [program:saanlarm]
 command=sudo /usr/bin/python /home/pi/saanlarm-backend/app.py
+directory=/home/pi/saanlarm-backend
 autostart=true
 autorestart=true
 stderr_logfile=/var/log/saanlarm.err.log
