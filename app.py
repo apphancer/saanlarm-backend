@@ -7,6 +7,7 @@ from user_settings import (
 from rotary import start_rotary_thread
 import config_local as config
 from auth import token_required, generate_token, USERS
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.SECRET_KEY
