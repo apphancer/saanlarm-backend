@@ -22,7 +22,7 @@ def save_user_settings():
 def load_user_settings():
     global rgbw_values, alarm_time, alarm_state
     if not os.path.exists(USER_SETTINGS_FILE):
-        save_user_settings()  # Create the file with default values
+        save_user_settings()
     else:
         with open(USER_SETTINGS_FILE, 'r') as file:
             data = json.load(file)

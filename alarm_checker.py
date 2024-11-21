@@ -4,9 +4,9 @@ import config_local as config
 from user_settings import set_rgbw_values, set_alarm_state, get_alarm_time
 from threading import Event
 
-fade_in_running_event = Event()  # Event to track fade-in state
-alarm_triggered = False  # Flag to ensure the alarm starts only once
-running = False  # Ensure that the periodic alarm checker runs
+fade_in_running_event = Event()
+alarm_triggered = False
+running = False
 
 def check_alarm(alarm_state, alarm_time):
     if alarm_state != "enabled":
@@ -35,9 +35,8 @@ def check_alarm(alarm_state, alarm_time):
         return f"Alarm not yet due. Time remaining: {time_difference}"
 
 def fade_in_led(callback):
-    fade_in_running_event.set()  # Mark fade-in as running
-    print(f"Fade-in started: fade_in_running_event is set")  # Debugging
-    duration_seconds = config.LED_FADE_IN_DURATION_MINUTES * 60  # convert minutes to seconds
+    fade_in_running_event.set()
+    duration_seconds = config.LED_FADE_IN_DURATION_MINUTES * 60
     steps = 255
     step_duration = duration_seconds / steps
 
@@ -46,16 +45,15 @@ def fade_in_led(callback):
             break
         rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": brightness}
         response, status_code = set_rgbw_values(rgbw_data)
-        time.sleep(step_duration)  # wait for the next step
+        time.sleep(step_duration)
 
     if fade_in_running_event.is_set():
         callback()
-    print("Fade-in completed.")  # Debugging
 
 def stop_alarm():
-    fade_in_running_event.clear()  # Mark fade-in as not running
+    fade_in_running_event.clear()
     set_alarm_state("disabled")
-    rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}  # Turn off LEDs
+    rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}
     response, status_code = set_rgbw_values(rgbw_data)
     print("ALARM STOPPED")
 
@@ -68,23 +66,21 @@ def periodic_alarm_check():
         alarm_time = alarm_info['alarm_time']
         alarm_state = alarm_info['alarm_state']
 
-        # Debugging
-        print(f"Checking alarm. Alarm triggered: {alarm_triggered}, fade_in_running: {fade_in_running_event.is_set()}")
 
-        # Perform the alarm check
+        print(f"Checking alarm. Alarm triggered: {alarm_triggered}")
+
         if alarm_state == "enabled" and alarm_time:
             result = check_alarm(alarm_state, alarm_time)
             if result == "ALARM STARTING" and not alarm_triggered:
-                print(result)  # Print ALARM STARTING only once
+                print(result)
                 alarm_triggered = True
                 if not fade_in_running_event.is_set():
                     fade_in_led(fade_in_completed)
             elif result != "ALARM STARTING":
-                alarm_triggered = False  # Reset the flag if not in the alarm window
+                alarm_triggered = False
                 if fade_in_running_event.is_set():
                     stop_alarm()
         time.sleep(60)
 
 def fade_in_completed():
     fade_in_running_event.clear()
-    print("Fade-in completed: fade_in_running_event cleared")  # Debugging
