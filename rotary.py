@@ -6,6 +6,7 @@ import time
 from config import ROTARY_SW
 from user_settings import load_user_settings, set_alarm_state, get_alarm_state, set_rgbw_values
 from alarm_checker import stop_alarm, fade_in_running_event
+from logger import log_with_datetime
 
 logging.basicConfig(level=logging.INFO)
 
@@ -17,22 +18,22 @@ def change_callback(scale_position):
     set_rgbw_values(rgbw_data)
 
     logging.info(f'Scale position {scale_position}, brightness updated to {brightness}')
-    print(f'Scale position is {scale_position}, brightness {brightness}')
+    log_with_datetime(f'Scale position is {scale_position}, brightness {brightness}')
 
 def sw_callback():
     load_user_settings()
     alarm_state = get_alarm_state()
 
     if fade_in_running_event.is_set():
-        print("Fade-in running, stopping alarm...")
+        log_with_datetime("Fade-in running, stopping alarm...")
         stop_alarm()
     else:
         if alarm_state == "enabled":
             set_alarm_state("disabled")
-            print("Alarm disabled")
+            log_with_datetime("Alarm disabled")
         else:
             set_alarm_state("enabled")
-            print("Alarm enabled")
+            log_with_datetime("Alarm enabled")
 
 EVENT_DEVICE_PATH = '/dev/input/event0'
 

@@ -3,6 +3,7 @@ import time
 import config_local as config
 from user_settings import set_rgbw_values, set_alarm_state, get_alarm_time
 from threading import Event
+from logger import log_with_datetime
 
 fade_in_running_event = Event()
 alarm_triggered = False
@@ -55,7 +56,7 @@ def stop_alarm():
     set_alarm_state("disabled")
     rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": 0}
     response, status_code = set_rgbw_values(rgbw_data)
-    print("ALARM STOPPED")
+    log_with_datetime("ALARM STOPPED")
 
 def periodic_alarm_check():
     global running, alarm_triggered
@@ -67,12 +68,12 @@ def periodic_alarm_check():
         alarm_state = alarm_info['alarm_state']
 
 
-        print(f"Checking alarm. Alarm triggered: {alarm_triggered}")
+        log_with_datetime(f"Checking alarm. Alarm triggered: {alarm_triggered}")
 
         if alarm_state == "enabled" and alarm_time:
             result = check_alarm(alarm_state, alarm_time)
             if result == "ALARM STARTING" and not alarm_triggered:
-                print(result)
+                log_with_datetime(result)
                 alarm_triggered = True
                 if not fade_in_running_event.is_set():
                     fade_in_led(fade_in_completed)
