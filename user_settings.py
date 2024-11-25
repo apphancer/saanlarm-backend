@@ -7,8 +7,14 @@ from led import set_led_colours
 USER_SETTINGS_FILE = 'user_settings.json'
 
 rgbw_values = {"red": 0, "green": 0, "blue": 0, "white": 0}
-alarm_time = None
+alarm_time = "07:00"
 alarm_state = "disabled"
+
+default_settings = {
+    "rgbw_values": rgbw_values,
+    "alarm_time": alarm_time,
+    "alarm_state": alarm_state
+}
 
 def save_user_settings():
     data = {
@@ -21,14 +27,15 @@ def save_user_settings():
 
 def load_user_settings():
     global rgbw_values, alarm_time, alarm_state
-    if not os.path.exists(USER_SETTINGS_FILE):
+
+    if not os.path.exists(USER_SETTINGS_FILE) or os.path.getsize(USER_SETTINGS_FILE) == 0:
         save_user_settings()
     else:
         with open(USER_SETTINGS_FILE, 'r') as file:
             data = json.load(file)
-            rgbw_values = data.get("rgbw_values", rgbw_values)
-            alarm_time = data.get("alarm_time", alarm_time)
-            alarm_state = data.get("alarm_state", alarm_state)
+            rgbw_values = data.get("rgbw_values", default_settings["rgbw_values"])
+            alarm_time = data.get("alarm_time", default_settings["alarm_time"])
+            alarm_state = data.get("alarm_state", default_settings["alarm_state"])
 
 def control_led(alarm_state):
     if alarm_state == "enabled":
@@ -85,3 +92,6 @@ def set_rgbw_values(data):
     )
 
     return {"message": "RGBW values updated successfully"}, 200
+
+# Initialize settings at module import
+load_user_settings()
