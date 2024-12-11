@@ -11,6 +11,13 @@ from logger import log_with_datetime
 logging.basicConfig(level=logging.INFO)
 
 def change_callback(scale_position):
+    load_user_settings()
+    alarm_state = get_alarm_state()
+
+    if fade_in_running_event.is_set():
+        log_with_datetime("Fade-in running, stopping alarm...")
+        stop_alarm()
+
     brightness_levels = {i: int((255 / 19) * i) for i in range(20)}
     brightness = brightness_levels.get(scale_position, 0)
 
