@@ -2,13 +2,16 @@ import json
 import sys
 import board
 import neopixel
+import os
 
-NUM_PIXELS = 150
-LED_DATA_GPIO = 21
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+import config_local as config
+
+pixel_pin = getattr(board, f"D{config.LED_DATA_GPIO}")
+num_pixels = config.NUM_PIXELS
 ORDER = neopixel.GRBW
 
-pixel_pin = getattr(board, f"D{LED_DATA_GPIO}")
-pixels = neopixel.NeoPixel(pixel_pin, NUM_PIXELS, pixel_order=ORDER, auto_write=False)
+pixels = neopixel.NeoPixel(pixel_pin, num_pixels, pixel_order=ORDER, auto_write=False)
 
 def set_led_colours_from_json(json_input):
     try:
@@ -20,7 +23,7 @@ def set_led_colours_from_json(json_input):
     for pixel, colours in led_settings.items():
         try:
             index = int(pixel) - 1  # Convert pixel number to zero-based index
-            if 0 <= index < NUM_PIXELS:
+            if 0 <= index < num_pixels:
                 red = colours.get("R", 0)
                 green = colours.get("G", 0)
                 blue = colours.get("B", 0)
@@ -42,9 +45,7 @@ def set_led_colours_from_json(json_input):
 
     pixels.show()
 
-def set_led_colours_from_json_input():
-    json_input = sys.stdin.read()
-    set_led_colours_from_json(json_input)
-
 if __name__ == "__main__":
-    set_led_colours_from_json_input()
+    for line in sys.stdin:
+        if line.strip():
+            set_led_colours_from_json(line.strip())
