@@ -12,25 +12,18 @@ num_pixels = config.NUM_PIXELS
 
 min_leds = 1
 max_leds = num_pixels
-num_leds_per_cycle = 15 # move to config
+num_leds_per_cycle = config.SUNRISE_NUM_LEDS_PER_CYCLE
 
+phase1_red_max = config.SUNRISE_PHASE_1_RED_MAX_BRIGHTNESS
+phase1_white_max = config.SUNRISE_PHASE_1_WHITE_MAX_BRIGHTNESS
+phase1_cycles = phase1_red_max + phase1_white_max
+phase1_total_minutes = config.SUNRISE_PHASE_1_TOTAL_MINUTES
 
+phase2_cycles = config.SUNRISE_PHASE_2_WHITE_MAX_BRIGHTNESS
+phase2_total_minutes = config.SUNRISE_PHASE_2_TOTAL_MINUTES
 
-
-red_brightness = 2  # move to config
-white_brightness = 5  # move to config
-cycles1 = red_brightness + white_brightness
-total_minutes1 = 1.5 # move to config 1.5
-
-
-
-cycles2 = 50 # move to config 25
-total_minutes2 = 1.5 # move to config 1.5
-
-
-cycle3 = 255
-total_minutes3 = 1.5 # move to config 1.5
-
+phase3_cycles = config.SUNRISE_PHASE_3_WHITE_MAX_BRIGHTNESS
+phase3_total_minutes = config.SUNRISE_PHASE_3_TOTAL_MINUTES
 
 process = subprocess.Popen(['python', 'ledWriter.py'], stdin=subprocess.PIPE, text=True)
 
@@ -85,16 +78,16 @@ steps_per_cycle = total_leds / num_leds_per_cycle
 
 
 
-total_steps = steps_per_cycle * cycles1
-step_time = (total_minutes1 * 60) / total_steps
+total_steps = steps_per_cycle * phase1_cycles
+step_time = (phase1_total_minutes * 60) / total_steps
 
 print(f"-------")
 print(f"-------")
-print(f"STAGE 1 | Total Cycles: {cycles1} | Total Steps Per Cycle: {steps_per_cycle} | Total Steps: {total_steps} | Step Time: {step_time} s")
+print(f"STAGE 1 | Total Cycles: {phase1_cycles} | Total Steps Per Cycle: {steps_per_cycle} | Total Steps: {total_steps} | Step Time: {step_time} s")
 print(f"-------")
 print(f"-------")
 
-cycles_config = [('R', red_brightness)] + [('W', white_brightness)]
+cycles_config = [('R', phase1_red_max)] + [('W', phase1_white_max)]
 
 for colour, count in cycles_config:
     for _ in range(count):
@@ -104,15 +97,15 @@ for colour, count in cycles_config:
 
 
 
-total_steps = steps_per_cycle * cycles2
-step_time = (total_minutes2 * 60) / total_steps
+total_steps = steps_per_cycle * phase2_cycles
+step_time = (phase2_total_minutes * 60) / total_steps
 print(f"-------")
 print(f"-------")
-print(f"STAGE 2 | Total Cycles: {cycles2} | Total Steps Per Cycle: {steps_per_cycle} | Total Steps: {total_steps} | Step Time: {step_time} s")
+print(f"STAGE 2 | Total Cycles: {phase2_cycles} | Total Steps Per Cycle: {steps_per_cycle} | Total Steps: {total_steps} | Step Time: {step_time} s")
 print(f"-------")
 print(f"-------")
 
-for _ in range(cycles2):
+for _ in range(phase2_cycles):
     print(f"Cycle {_}")
     print(f"-------")
     generate_cycles(leds, 'W', min_leds, max_leds, total_leds, num_leds_per_cycle, step_time)
@@ -123,8 +116,8 @@ for _ in range(cycles2):
 # print(json.dumps(filtered_leds_final, sort_keys=True))
 
 
-total_steps = cycle3 - (white_brightness+cycles2)
-step_time = (total_minutes3 * 60) / total_steps
+total_steps = phase3_cycles - (phase1_white_max+phase2_cycles)
+step_time = (phase3_total_minutes * 60) / total_steps
 
 print(f"-------")
 print(f"-------")
@@ -133,7 +126,7 @@ print(f"-------")
 print(f"-------")
 
 
-current_brightness = (white_brightness+cycles2)
+current_brightness = (phase1_white_max+phase2_cycles)
 
 for iteration in range(total_steps):
     current_brightness += 1
