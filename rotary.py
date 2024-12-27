@@ -7,17 +7,31 @@ from config import ROTARY_SW
 from user_settings import load_user_settings, set_alarm_state, get_alarm_state, set_rgbw_values
 from alarm_checker import stop_alarm, fade_in_running_event
 from logger import log_with_datetime
+import os
+import evdev
 
 logging.basicConfig(level=logging.INFO)
 
+def get_rotary_device():
+    print("Scanning available input devices...")
+
+    for event_file in os.listdir('/dev/input/'):
+        if event_file.startswith('event'):  # Look at input event files
+            try:
+                device = evdev.InputDevice(f'/dev/input/{event_file}')
+                print(f"Found device: {device.name} at /dev/input/{event_file}")  # Log all found devices
+
+                # Match the rotary encoder's name as described in your system (from dmesg)
+                if device.name == "rotary@11":
+                    return f"/dev/input/{event_file}"
+            except Exception as e:
+                print(f"Skipping {event_file}: {e}")  # Log skipped files if any
+                continue
+
+    # If no matching device is found, raise an exception
+    raise Exception("Rotary encoder device not found!")
+
 def change_callback(scale_position):
-    load_user_settings()
-    alarm_state = get_alarm_state()
-
-    if fade_in_running_event.is_set():
-        log_with_datetime("Fade-in running, stopping alarm...")
-        stop_alarm()
-
     brightness_levels = {i: int((255 / 19) * i) for i in range(20)}
     brightness = brightness_levels.get(scale_position, 0)
 
@@ -42,7 +56,12 @@ def sw_callback():
             set_alarm_state("enabled")
             log_with_datetime("Alarm enabled")
 
-EVENT_DEVICE_PATH = '/dev/input/event0'
+try:
+   EVENT_DEVICE_PATH = get_rotary_device()
+   print(f"Rotary encoder device found: {EVENT_DEVICE_PATH}")
+except Exception as e:
+   print(f"Error: {e}")
+   exit(1)
 
 try:
     my_encoder = pyky040.Encoder(device=EVENT_DEVICE_PATH)

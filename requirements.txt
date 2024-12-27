@@ -5,3 +5,4 @@ pyky040
 evdev
 gpiozero
 PyJWT
+evdev

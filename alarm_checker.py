@@ -4,6 +4,7 @@ import config_local as config
 from user_settings import set_rgbw_values, set_alarm_state, get_alarm_time
 from threading import Event
 from logger import log_with_datetime
+from sunrise.shuffledCycleGenerator import start_sunrise_cycle
 
 fade_in_running_event = Event()
 alarm_triggered = False
@@ -37,16 +38,12 @@ def check_alarm(alarm_state, alarm_time):
 
 def fade_in_led(callback):
     fade_in_running_event.set()
-    duration_seconds = config.LED_FADE_IN_DURATION_MINUTES * 60
-    steps = 255
-    step_duration = duration_seconds / steps
 
-    for brightness in range(steps):
-        if not fade_in_running_event.is_set():
-            break
-        rgbw_data = {"red": 0, "green": 0, "blue": 0, "white": brightness}
-        response, status_code = set_rgbw_values(rgbw_data)
-        time.sleep(step_duration)
+    try:
+        start_sunrise_cycle(fade_in_running_event)
+    except Exception as e:
+        log_with_datetime(f"Error during sunrise cycle: {e}")
+        fade_in_running_event.clear()
 
     if fade_in_running_event.is_set():
         callback()
