@@ -29,7 +29,8 @@ def check_alarm(alarm_state, alarm_time):
         alarm_datetime += timedelta(days=1)
 
     time_difference = alarm_datetime - current_time
-    duration_minutes = config.LED_FADE_IN_DURATION_MINUTES
+
+    duration_minutes = (config.SUNRISE_PHASE_1_TOTAL_MINUTES + config.SUNRISE_PHASE_2_TOTAL_MINUTES + config.SUNRISE_PHASE_3_TOTAL_MINUTES)
 
     if timedelta(minutes=0) <= time_difference <= timedelta(minutes=duration_minutes):
         return "ALARM STARTING"
